@@ -1,4 +1,4 @@
-require 'mysql'
+require 'mysql2'
 #
 # Assignment:
 #
@@ -36,11 +36,11 @@ class WaterSample
     # sample2.bromodichloromethane.should == 0.00547
     # sample2.dibromichloromethane.should == 0.0109
 
-    db = Mysql.new('localhost', 'root', 'Jojo39', 'water_analysis')
-    sample = db.query("select * from water_sample where id = #{sample_id}").fetch_hash
-    sample ||= "The sample with that id does not exist"
-    # MUST CONVERT TO DOT NOTATION
-    return sample
+    db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => 'water_analysis')
+    db.query("SELECT * FROM water_sample WHERE id=3", :symbolize_keys => true).each do |row|
+       # must update to respond to dot notation
+       @sample = row
+    end
     db.close
 
 
