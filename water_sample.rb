@@ -1,4 +1,5 @@
 require 'mysql2'
+require 'pry'
 #
 # Assignment:
 #
@@ -36,20 +37,13 @@ class WaterSample
     # sample2.bromodichloromethane.should == 0.00547
     # sample2.dibromichloromethane.should == 0.0109
 
-    db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => 'water_analysis')
+    db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => "water_analysis")
     db.query("SELECT * FROM water_sample WHERE id=#{sample_id}", :symbolize_keys => true).each do |row|
        # must update to respond to dot notation
        @sample = row
     end
     db.close
-  end
-
-  def dot_notation(method)
-    m = method.to_s
-    if self.has_key?(m.to_sym)
-      return self[m.to_sym]
-    end
-    super
+    return @sample
   end
 
   # Some Trihalomethanes are nastier than others, bromodichloromethane and
@@ -100,7 +94,7 @@ class WaterSample
     # Note that the factor for this example is from data not in the sample data
     # above, that's because I want you to be sure you understand how to compute
     # this value conceptually.
-  db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => 'water_analysis')
+  db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => "water_analysis")
     db.query("SELECT * FROM factor_weights WHERE id=#{factor_weights_id}", :symbolize_keys => true).each do |row|
        @loadings = row
     end
@@ -130,5 +124,6 @@ class Hash
   end
 end
 
+binding.pry
 
 
