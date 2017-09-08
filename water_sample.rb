@@ -1,3 +1,4 @@
+require 'mysql'
 #
 # Assignment:
 #
@@ -8,7 +9,7 @@
 # presence of contaminants. Here's an excerpt of the table:
 # (from: http://file.lacounty.gov/bc/q3_2010/cms1_148456.pdf)
 # (All chemical values are in mg/L)
-# | id | site                                      | chloroform | bromoform | bromodichloromethane | dibromichloromethane |
+# | id | site                                      | chloroform | bromoform | bromodichloromethane | dibromochloromethane |
 # |  1 | LA Aquaduct Filteration Plant Effluent    |   .00104   | .00000    |  .00149              |  .00275              |
 # |  2 | North Hollywood Pump Station (well blend) |   .00291   | .00487    |  .00547              |  .0109               |
 # |  3 | Jensen Plant Effluent                     |   .00065   | .00856    |  .0013               |  .00428              |
@@ -34,6 +35,13 @@ class WaterSample
     # sample2.bromoform.should == 0.00487
     # sample2.bromodichloromethane.should == 0.00547
     # sample2.dibromichloromethane.should == 0.0109
+
+    db = Mysql.new('localhost', 'root', 'Jojo39', 'water_analysis')
+    sample = db.query("select * from water_sample where id = #{sample_id}").fetch_hash
+    sample ||= "The sample with that id does not exist"
+    # MUST CONVERT TO DOT NOTATION
+    return sample
+    db.close
 
 
   end
