@@ -39,10 +39,10 @@ class WaterSample
 
     db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => "water_analysis")
     db.query("SELECT * FROM water_sample WHERE id=#{sample_id}", :symbolize_keys => true).each do |row|
-       # must update to respond to dot notation
        @sample = row
     end
     db.close
+    # **handle for if that sample id does not exist
     return @sample
   end
 
@@ -94,11 +94,17 @@ class WaterSample
     # Note that the factor for this example is from data not in the sample data
     # above, that's because I want you to be sure you understand how to compute
     # this value conceptually.
-  db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => "water_analysis")
-    db.query("SELECT * FROM factor_weights WHERE id=#{factor_weights_id}", :symbolize_keys => true).each do |row|
-       @loadings = row
+    db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => "water_analysis")
+    db.query("SELECT * FROM factor_weight WHERE id=#{factor_weights_id}", :symbolize_keys => true).each do |row|
+      @loadings = row
     end
-  db.close
+    db.close
+    # Multiply same type and weight then sum to determine the factor
+    # need to handle for nils
+    self.map { |key, val|
+      weight_symbol = (key.to_s + "_weight").to_sym
+      val * @loadings[weight_symbol]
+    }.reduce(:+)
   end
 
   # convert the object to a hash
@@ -109,9 +115,19 @@ class WaterSample
     #   => {:id =>2, :site => "North Hollywood Pump Station (well blend)", :chloroform => .00291, :bromoform => .00487, :bromodichloromethane => .00547 , :dibromichlormethane => .0109}
     # sample2.to_hash(true)
     # #let's say only 3 factors exist in our factors table, with ids of 5, 6, and 9
-    #   => {:id =>2, :site => "North Hollywood Pump Station (well blend)", :chloroform => .00291, :bromoform => .00487, :bro   modichloromethane => .00547 , :dibromichlormethane => .0109, :factor_5 => .0213, :factor_6 => .0432, :factor_9 => 0.0321}
-
+    #   => {:id =>2, :site => "North Hollywood Pump Station (well blend)", :chloroform => .00291, :bromoform => .00487, :bromodichloromethane => .00547 , :dibromichlormethane => .0109, :factor_5 => .0213, :factor_6 => .0432, :factor_9 => 0.0321}
+    if include_factors
+      db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => "water_analysis")
+      db.query("SELECT * FROM factor_weights", :symbolize_keys => true).each do |row|
+      # add code
+      end
+      db.close
+      return
+    else
+      return self
+    end
   end
+
 end
 
 #utilizing Ruby's open classes and 'method_missing' to invoke dot notation on hashes
