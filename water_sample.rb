@@ -27,6 +27,14 @@ class WaterSample
   #
   # The schema it must interact with and some sample data should be delivered
   # with your assignment as a MySQL dump
+  attr_reader :chloroform, :bromoform, :bromodichloromethane, :dibromochloromethane
+
+  def initialize(sample_hash)
+    @chloroform = sample_hash[:chloroform]
+    @bromoform = sample_hash[:bromoform]
+    @bromodichloromethane = sample_hash[:bromodichloromethane]
+    @dibromochloromethane = sample_hash[:dibromochloromethane]
+  end
 
   def self.find(sample_id)
     # spec
@@ -36,10 +44,9 @@ class WaterSample
     # sample2.bromoform.should == 0.00487
     # sample2.bromodichloromethane.should == 0.00547
     # sample2.dibromichloromethane.should == 0.0109
-
     db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => "water_analysis")
     db.query("SELECT * FROM water_sample WHERE id=#{sample_id}", :symbolize_keys => true).each do |row|
-       @sample = row
+       @sample = self.new(row)
     end
     db.close
     # **handle for if that sample id does not exist
@@ -130,15 +137,6 @@ class WaterSample
 
 end
 
-#utilizing Ruby's open classes and 'method_missing' to invoke dot notation on hashes
-class Hash
-  def method_missing(method)
-    m = method.to_sym
-    if self.has_key?(m)
-      return self[m]
-    end
-  end
-end
 
 binding.pry
 
