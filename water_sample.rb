@@ -126,11 +126,13 @@ class WaterSample
     # #let's say only 3 factors exist in our factors table, with ids of 5, 6, and 9
     #   => {:id =>2, :site => "North Hollywood Pump Station (well blend)", :chloroform => .00291, :bromoform => .00487, :bromodichloromethane => .00547 , :dibromichlormethane => .0109, :factor_5 => .0213, :factor_6 => .0432, :factor_9 => 0.0321}
     if include_factors
+      @hash_with_factors = @hash.clone
       db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => "water_analysis")
-      db.query("SELECT * FROM factor_weights", :symbolize_keys => true).each do |row|
-      # add code
+      db.query("SELECT * FROM factor_weight", :symbolize_keys => true).each do |row|
+        @hash_with_factors["factor_#{row[:id]}".to_sym] = self.factor(row[:id])
       end
       db.close
+      return @hash_with_factors
     else
       return @hash
     end
