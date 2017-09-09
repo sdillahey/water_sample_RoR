@@ -27,13 +27,15 @@ class WaterSample
   #
   # The schema it must interact with and some sample data should be delivered
   # with your assignment as a MySQL dump
-  attr_reader :chloroform, :bromoform, :bromodichloromethane, :dibromochloromethane
+  attr_reader :site, :chloroform, :bromoform, :bromodichloromethane, :dibromochloromethane
 
   def initialize(sample_hash)
+    @site = sample_hash[:site]
     @chloroform = sample_hash[:chloroform]
     @bromoform = sample_hash[:bromoform]
     @bromodichloromethane = sample_hash[:bromodichloromethane]
     @dibromochloromethane = sample_hash[:dibromochloromethane]
+    @hash = sample_hash
   end
 
   def self.find(sample_id)
@@ -107,11 +109,11 @@ class WaterSample
     end
     db.close
     # Multiply same type and weight then sum to determine the factor
-    # need to handle for nils
-    self.map { |key, val|
+    # need to handle for nils prior to the mapping
+    @hash.map { |key, val|
       weight_symbol = (key.to_s + "_weight").to_sym
-      val * @loadings[weight_symbol]
-    }.reduce(:+)
+      val * @loadings[weight_symbol] if @loadings[weight_symbol]
+    }.compact.reduce(:+)
   end
 
   # convert the object to a hash
@@ -129,9 +131,8 @@ class WaterSample
       # add code
       end
       db.close
-      return
     else
-      return self
+      return @hash
     end
   end
 
