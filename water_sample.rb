@@ -108,12 +108,15 @@ class WaterSample
       @loadings = row
     end
     db.close
+    # assuming factor is 'n/a' if it doesn't include all loadings
+    return "n/a" unless @loadings.values.all?
     # Multiply same type and weight then sum to determine the factor
-    # need to handle for nils prior to the mapping
-    @hash.map { |key, val|
+    factor_result = @hash.map { |key, val|
       weight_symbol = (key.to_s + "_weight").to_sym
-      val * @loadings[weight_symbol] if @loadings[weight_symbol]
-    }.compact.reduce(:+)
+      # check to determine that there are no missing sample measurements
+      break @err = "N/A" if val.nil?
+      val * @loadings[weight_symbol] if @loadings[weight_symbol] }
+    @err || factor_result.compact.reduce(:+)
   end
 
   # convert the object to a hash
