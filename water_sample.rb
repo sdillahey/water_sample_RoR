@@ -108,8 +108,8 @@ class WaterSample
       @loadings = row
     end
     db.close
-    # assuming factor is 'n/a' if it doesn't include all loadings
-    return "n/a" unless @loadings.values.all?
+    # handles for null factor weights, assuming the factor is 'n/a' if it doesn't include all loadings
+    return "N/A" unless @loadings.values.all?
     # Multiply same type and weight then sum to determine the factor
     factor_result = @hash.map { |key, val|
       weight_symbol = (key.to_s + "_weight").to_sym
