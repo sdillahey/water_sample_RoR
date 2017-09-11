@@ -51,7 +51,6 @@ class WaterSample
        @sample = self.new(row)
     end
     db.close
-    # **handle for if that sample id does not exist
     return @sample
   end
 
