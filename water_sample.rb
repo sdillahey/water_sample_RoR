@@ -47,11 +47,15 @@ class WaterSample
     # sample2.bromodichloromethane.should == 0.00547
     # sample2.dibromichloromethane.should == 0.0109
     db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => "water_analysis")
-    db.query("SELECT * FROM water_sample WHERE id=#{sample_id}", :symbolize_keys => true).each do |row|
-       @sample = self.new(row)
+    sample = db.query("SELECT * FROM water_sample WHERE id=#{sample_id}", :symbolize_keys => true).each do |row|
+       row
     end
     db.close
-    return @sample
+    if sample.length == 0
+      return "There is no record with a sample id of #{sample_id}"
+    else
+      return self.new(sample[0])
+    end
   end
 
   # Some Trihalomethanes are nastier than others, bromodichloromethane and
