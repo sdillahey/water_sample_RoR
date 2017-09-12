@@ -107,18 +107,19 @@ class WaterSample
     # above, that's because I want you to be sure you understand how to compute
     # this value conceptually.
     db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => "water_analysis")
-    db.query("SELECT * FROM factor_weight WHERE id=#{factor_weights_id}", :symbolize_keys => true).each do |row|
-      @loadings = row
+    loadings = db.query("SELECT * FROM factor_weight WHERE id=#{factor_weights_id}", :symbolize_keys => true).each do |row|
+      row
     end
     db.close
+    return "There is no record associated with a factor id of #{factor_weights_id}" if loadings.length == 0
     # handles for null factor weights, assuming the factor is 'n/a' if it doesn't include all loadings
-    return "N/A" unless @loadings.values.all?
+    return "N/A" unless loadings[0].values.all?
     # Multiply same type and weight then sum to determine the factor
     factor_result = @hash.map { |key, val|
       weight_symbol = (key.to_s + "_weight").to_sym
       # check to determine that there are no missing sample measurements
       break @err = "N/A" if val.nil?
-      val * @loadings[weight_symbol] if @loadings[weight_symbol] }
+      val * loadings[0][weight_symbol] if loadings[0][weight_symbol] }
     @err || factor_result.compact.reduce(:+)
   end
 
