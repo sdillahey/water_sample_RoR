@@ -46,7 +46,7 @@ class WaterSample
     # sample2.bromoform.should == 0.00487
     # sample2.bromodichloromethane.should == 0.00547
     # sample2.dibromichloromethane.should == 0.0109
-    db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => "water_analysis")
+    db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "", :database => "water_analysis")
     sample = db.query("SELECT * FROM water_sample WHERE id=#{sample_id}", :symbolize_keys => true).each do |row|
        row
     end
@@ -106,7 +106,7 @@ class WaterSample
     # Note that the factor for this example is from data not in the sample data
     # above, that's because I want you to be sure you understand how to compute
     # this value conceptually.
-    db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => "water_analysis")
+    db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "", :database => "water_analysis")
     loadings = db.query("SELECT * FROM factor_weight WHERE id=#{factor_weights_id}", :symbolize_keys => true).each do |row|
       row
     end
@@ -134,7 +134,7 @@ class WaterSample
     #   => {:id =>2, :site => "North Hollywood Pump Station (well blend)", :chloroform => .00291, :bromoform => .00487, :bromodichloromethane => .00547 , :dibromichlormethane => .0109, :factor_5 => .0213, :factor_6 => .0432, :factor_9 => 0.0321}
     if include_factors
       @hash_with_factors = @hash.clone
-      db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "Jojo39", :database => "water_analysis")
+      db = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "", :database => "water_analysis")
       db.query("SELECT * FROM factor_weight", :symbolize_keys => true).each do |row|
         @hash_with_factors["factor_#{row[:id]}".to_sym] = self.factor(row[:id])
       end
